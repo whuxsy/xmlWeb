@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>student</title>
+    <script src="js/vue.min.js"></script>
+    <script src="js/axios.min.js"></script>
+    <script src="js/analysisXML.js"></script>
+</head>
+<body>
+    <h2>学生信息</h2>
+    <div id="student">
+        <button type="button" @click='getAllStudent'>获取全部学生信息</button>
+        <table border="1" id="student_table">
+            <tr bgcolor="#9acd32">
+                <th style="text-align: left">ID</th>
+                <th style="text-align: left">姓名</th>
+                <th style="text-align: left">性别</th>
+                <th style="text-align: left">年龄</th>
+            </tr>
+            <tr v-for="student in students">
+                <td>{{student.sid}}</td>
+                <td>{{student.name}}</td>
+                <td>{{student.sex}}</td>
+                <td>{{student.age}}</td>
+            </tr>
+        </table>
+
+
+
+        <br>
+        <br>
+        <hr>
+        <br>
+        <br>
+
+        <form>
+            <label for="sid">学生id：</label><input id="sid" type="text"/><br>
+            <label for="name">学生姓名：</label><input id="name" type="text"/><br>
+            <label for="sex">学生性别：</label><input id="sex" type="text"/><br>
+            <label for="age">学生年龄：</label><input id="age" type="text"/><br>
+        </form>
+        <button type="button" @click='addOneStudent'>新增一个学生</button>
+    </div>
+
+
+
+    <script>
+        let url = "/index/student";
+        new Vue({
+            el:'#student',
+            data:{
+                students:[]
+            },
+            methods:{
+                //获取全部学生
+                getAllStudent:function(){
+                    let self = this
+                    axios.get(url,{
+                    }).then(function(response) {
+                        //获取后端xml数据
+                        let xml = response.data;
+                        //将xml数据转化为xml对象
+                        let xmlDoc = analysisXML(xml);
+                        //初始化students数组
+                        let students = xmlDoc.getElementsByTagName("item");
+                        self.students=[];//清空
+                        for (let i = 0; i < students.length; i++){
+                            let sid = students[i].getAttribute("sid");
+                            let name = students[i].getElementsByTagName("name")[0].firstChild.nodeValue;
+                            let sex = students[i].getElementsByTagName("sex")[0].firstChild.nodeValue;
+                            let age = students[i].getElementsByTagName("age")[0].firstChild.nodeValue;
+                            let student = {
+                                'sid': sid,
+                                'name':name,
+                                'age':age,
+                                'sex':sex
+                            };
+                            self.students.push(student);
+                        }
+                    })
+                },
+
+                //添加一个学生
+                addOneStudent:function () {
+                    let self = this;
+                    let sid = document.getElementById("sid").value;
+                    let name = document.getElementById("name").value;
+                    let sex = document.getElementById("sex").value;
+                    let age = document.getElementById("age").value;
+                    let xmlString = "<student sid='"+sid+"'>" +
+                        "<name>"+name+"</name>" +
+                        "<sex>" +sex+"</sex>"+
+                        "<age>" +age+"</age>"+
+                        "</student>"
+                    axios.post(url,xmlString,{
+                        headers: {'Content-Type':'application/xml' }
+                    }).then(function(response) {
+                        if(response.status==200){
+                            alert('添加成功！');
+                            let student = {
+                                'sid': sid,
+                                'name':name,
+                                'age':age,
+                                'sex':sex
+                            };
+                            self.students.push(student);
+                            self.getAllStudent();
+                        }else{
+                            alert('添加失败！')
+                        }
+                    })
+                }
+            }
+
+        })
+    </script>
+</body>
+</html>
