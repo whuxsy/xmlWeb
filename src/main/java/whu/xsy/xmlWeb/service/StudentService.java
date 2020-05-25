@@ -21,4 +21,12 @@ public class StudentService {
     public void postStudent(Student student){
         studentDao.save(student);
     }
+
+    public void updateStudent(Student student){
+        studentDao.save(student);
+    }
+
+    public void deleteStudent(int id){
+        studentDao.deleteById(id);
+    }
 }

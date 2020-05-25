@@ -41,6 +41,8 @@
             <label for="age">学生年龄：</label><input id="age" type="text"/><br>
         </form>
         <button type="button" @click='addOneStudent'>新增一个学生</button>
+        <button type="button" @click='updateStudent'>更新一个学生</button>
+        <button type="button" @click='deleteStudent'>删除一个学生</button>
     </div>
 
 
@@ -78,6 +80,8 @@
                             };
                             self.students.push(student);
                         }
+                    }).catch(error=>{
+                        alert('查询失败！')
                     })
                 },
 
@@ -98,17 +102,56 @@
                     }).then(function(response) {
                         if(response.status==200){
                             alert('添加成功！');
-                            let student = {
-                                'sid': sid,
-                                'name':name,
-                                'age':age,
-                                'sex':sex
-                            };
-                            self.students.push(student);
                             self.getAllStudent();
                         }else{
                             alert('添加失败！')
                         }
+                    }).catch(error=>{
+                        alert('添加失败！')
+                    })
+                },
+
+                //更新一个学生
+                updateStudent:function () {
+                    let self = this;
+                    let sid = document.getElementById("sid").value;
+                    let name = document.getElementById("name").value;
+                    let sex = document.getElementById("sex").value;
+                    let age = document.getElementById("age").value;
+                    let xmlString = "<student sid='"+sid+"'>" +
+                        "<name>"+name+"</name>" +
+                        "<sex>" +sex+"</sex>"+
+                        "<age>" +age+"</age>"+
+                        "</student>"
+                    axios.put(url,xmlString,{
+                        headers: {'Content-Type':'application/xml' }
+                    }).then(function(response) {
+                        if(response.status==200){
+                            alert('更新成功！');
+                            self.getAllStudent();
+                        }else{
+                            alert('更新失败！')
+                        }
+                    }).catch(error=>{
+                        alert('更新失败！')
+                    })
+                },
+
+                //删除一个学生
+                deleteStudent:function () {
+                    let self = this;
+                    let sid = document.getElementById("sid").value;
+                    axios.delete(url+"/"+sid,null,{
+                        headers: {'Content-Type':'application/xml' }
+                    }).then(function(response) {
+                        if(response.status==200){
+                            alert('删除成功！');
+                            self.getAllStudent();
+                        }else{
+                            alert('删除失败！')
+                        }
+                    }).catch(error=>{
+                        alert('删除失败！')
                     })
                 }
             }

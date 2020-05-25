@@ -2,9 +2,7 @@ package whu.xsy.xmlWeb.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import whu.xsy.xmlWeb.pojo.Course;
 import whu.xsy.xmlWeb.pojo.Student;
-import whu.xsy.xmlWeb.service.CourseService;
 import whu.xsy.xmlWeb.service.StudentService;
 
 import java.util.List;
@@ -16,21 +14,11 @@ public class indexController {
     @Autowired
     StudentService studentService;
 
-    @Autowired
-    CourseService courseService;
-
     //获取所有学生
     @GetMapping(value = "/student",produces = "application/xml")
     @ResponseBody
     public List<Student> getAllStudent(){
         return studentService.getAllStudents();
-    }
-
-    //获取所有课程
-    @GetMapping(value = "/course",produces = "application/xml")
-    @ResponseBody
-    public List<Course> getAllCourse(){
-        return courseService.getAllCourse();
     }
 
     //上传一个学生
@@ -39,10 +27,17 @@ public class indexController {
         studentService.postStudent(student);
     }
 
-
-    //上传一个课程
-    @PostMapping(value = "/course",consumes = "application/xml")
-    public void postCourse(@RequestBody Course course){
-        courseService.postCourse(course);
+    //更新一个学生
+    @PutMapping(value = "/student",consumes = "application/xml")
+    public void updateStudent(@RequestBody Student student){
+        studentService.updateStudent(student);
     }
+
+    //删除一个学生
+    @DeleteMapping(value = "/student/{id}")
+    public void deleteStudent(@PathVariable int id){
+        studentService.deleteStudent(id);
+    }
+
+
 }
